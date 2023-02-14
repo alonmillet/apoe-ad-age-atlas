@@ -8,7 +8,7 @@ library(ComplexHeatmap)
 ## Prep counts matrix for SCENIC
 mglia = readRDS("mglia_only.rds")
 counts = as.data.table(GetAssayData(mglia, slot = "counts", assay = "RNA"), keep.rownames = TRUE)
-fwrite(counts, "/ru-auth/local/home/amillet/pyscenic/10wk_20wk_2yr_integrated/mglia_only/counts.txt", sep = "\t", 
+fwrite(counts, "counts.txt", sep = "\t", 
        row.names = FALSE, col.names = TRUE, quote = FALSE)
 
 ## Plot after run
