@@ -5,6 +5,13 @@ library(ComplexHeatmap)
 
 # SCENIC ----
 
+## Prep counts matrix for SCENIC
+mglia = readRDS("mglia_only.rds")
+counts = as.data.table(GetAssayData(mglia, slot = "counts", assay = "RNA"), keep.rownames = TRUE)
+fwrite(counts, "/ru-auth/local/home/amillet/pyscenic/10wk_20wk_2yr_integrated/mglia_only/counts.txt", sep = "\t", 
+       row.names = FALSE, col.names = TRUE, quote = FALSE)
+
+## Plot after run
 mglia = readRDS("mglia_only.rds") # structure generated in Fig. 1 code
 dat = fread("scenic_aucell_output.csv") # generated in Python; see accompanying code
 dat = as.data.frame(dat, rownames = TRUE)
