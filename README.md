@@ -3,7 +3,7 @@ This repository contains the code needed to reproduce all results and plots in M
 
 **Fig_1_and_Fig_S1.R**: code needed to generate Seurat structures for the 10wk/20wk/96wk atlas as well as microglial subclustering, plus code for all indicated figures (summary plots, DGE analysis, and preparation of code for CellRank). For convenience, the .rds files for those structures and their original CellRanger outputs are included as well. (Raw sequencing data is uploaded to GEO, accession number XXXXXXXXX.)
 
-> *Accompanying code: CellRank.ipynb*: This provides the Python notebook used to run CellRank on the data produced by the above R script. Note that splice-aware alignments were generated using kallisto | bustools.
+> *Accompanying code: CellRank*: This folder contains the Python notebooks used to run CellRank on the data produced by the above R script. *Generate h5ad from fastq.ipynb* produces the splice-aware alignments needed to run scVelo. *scVelo Script - Unified, mglia only.ipynb* runs scVelo on this data to generate RNA velocity estimations. *CellRank - Unified, mglia only.ipynb* augments these estimations using a custom kernel. 
 
 **Fig_2_and_Fig_S2A.R**: code needed to run SCENIC, CellPhoneDB, and Compass analysis.
 
