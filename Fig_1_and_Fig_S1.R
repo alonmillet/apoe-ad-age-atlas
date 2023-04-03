@@ -325,7 +325,7 @@ genes_toplot = c("P2ry12","Tmem119","Lars2","Bri3","Rgs1","Hspa1a","Hspb1","Numb
                  "Stmn1","Camp","Il1b","Rag1","Cd79a","Ace","F13a1","Cd209a","Ccr7","Adgre1",
                  "Cd8a","Cd4","Trdv4","Klra9","Gzma","Gata3","Fcnb")
 (DotPlot(adapoe,features=genes_toplot,assay="SCT", dot.scale = 15) + 
-    theme(axis.text.x = element_text(angle = 90, hjust=1, size = 40),
+    theme(axis.text.x = element_text(angle = 90, hjust=1, vjust=0.5, size = 40),
           axis.text.y = element_text(size=40), axis.title = element_text(size=40),
           legend.title = element_text(size=40), legend.text = element_text(size=35),legend.spacing.y = unit(0.1, 'in')) +
     guides(size = guide_legend(byrow = TRUE, order = 1), color = guide_colorbar(barheight = 12, order = 2)) + 
