@@ -308,11 +308,11 @@ datm.filtered = datm[,c(1,8,9,10,16,17,18)]
   ggsave("mglia_freqs_filtered_barplot.png",.,width=17.256,height=7.888,dpi=600)
 
 # Prep files for Figure 1G (generated in python) ----
-seurat = subset(adapoe, orig.ident == "E4_2yr")
+seurat = subset(adapoe, orig.ident == "E4_2yr") # repeat this for E3_2yr and the 20wk samples.
 cells = gsub(".*_(.+)-.*","\\1",Cells(seurat)) %>% as.data.frame
 embeddings = seurat@reductions$umap@cell.embeddings
 rownames(embeddings) = gsub(".*_(.+)-.*","\\1",rownames(embeddings))
-clusters = seurat$clust_id %>% as.data.frame
+clusters = seurat$mglia_ident %>% as.data.frame
 rownames(clusters) = gsub(".*_(.+)-.*","\\1",rownames(clusters))
 colnames(clusters) = "Cluster"
 fwrite(cells, "cells.csv", row.names = TRUE)
