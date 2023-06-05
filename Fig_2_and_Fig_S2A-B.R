@@ -61,7 +61,7 @@ dev.off()
 agg_toplot = as.matrix(dat_dt_toplot[,-1])
 agg_toplot = agg_toplot[, which(thresh>0.01 & thresh_max > 0.5)]
 rownames(agg_toplot) = dat_dt_toplot$ident
-agg_toplot_filt = agg_toplot[rownames(agg_toplot) %in% c("Effector-hi TIMs","TIMs","Serpine1+ TIMs","Homeostatic Microglia",
+agg_toplot_filt = agg_toplot[rownames(agg_toplot) %in% c("Effector-hi TIMs","Effector-lo TIMs","Serpine1+ TIMs","Homeostatic Microglia",
                                                          "Lars2-mid Homeostatic Microglia","Lars2-hi Homeostatic Microglia"),]
 agg_toplot_filt = agg_toplot_filt[,colnames(agg_toplot) %in% c(ap1_fam,irf_fam)]
 o1 = seriation::seriate(dist(agg_toplot_filt), method = "GW")
