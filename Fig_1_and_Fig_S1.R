@@ -211,19 +211,30 @@ dat[, frac := N/sum(N), by = age]
   ggsave("mglia_umap.png",.,width=14.06,height=10.935,dpi=600)
 
 # Figure 1D ----
-geno = DimPlot(mglia, group.by = "genotype") + theme(plot.title = element_blank(),
-                                                     axis.text = element_text(size=20),
-                                                     axis.title = element_text(size=30),
-                                                     legend.text = element_text(size=22.5),
-                                                     legend.spacing.y = unit(0.1, 'in')) + guides(color=guide_legend(override.aes = list(size = 5),byrow=TRUE))
-mglia$age_forplots = ifelse(mglia$age == "2yr", "96wk", as.character(mglia$age))
-mglia$age_forplots = factor(mglia$age_forplots, levels = c("10wk","20wk","96wk"))
-age = DimPlot(mglia, group.by = "age_forplots") + theme(plot.title = element_blank(),
-                                                        axis.text = element_text(size=20),
-                                                        axis.title = element_text(size=30),
-                                                        legend.text = element_text(size=22.5),
-                                                        legend.spacing.y = unit(0.1, 'in')) + guides(color=guide_legend(override.aes = list(size = 5),byrow=TRUE))
-(geno|age) %>% ggsave("mglia_umap_faceted.png",.,width=12.167,height=6.083,dpi=600)
+dat = mglia@reductions$umap@cell.embeddings %>% as.data.frame
+dat$age = mglia$age
+densumap = (ggplot(dat, aes(x=UMAP_1,y=UMAP_2)) + 
+        geom_point(color = "gray", alpha = 0.4) +
+        stat_density_2d(geom = "density_2d_filled", contour = T, aes(fill = after_stat(level)), data = subset(dat, age == "10wk"),
+                        linewidth = 0.5, color = "ivory", alpha = 0.8) + 
+        labs(title = "10 Weeks")) +
+  (ggplot(dat, aes(x=UMAP_1,y=UMAP_2)) + 
+     geom_point(color = "gray", alpha = 0.4) +
+     stat_density_2d(geom = "density_2d_filled", contour = T, aes(fill = after_stat(level)), data = subset(dat, age == "20wk"),
+                     linewidth = 0.5, color = "ivory", alpha = 0.8) + 
+     labs(title = "20 Weeks")) + 
+  (ggplot(dat, aes(x=UMAP_1,y=UMAP_2)) + 
+     geom_point(color = "gray", alpha = 0.4) +
+     stat_density_2d(geom = "density_2d_filled", contour = T, aes(fill = after_stat(level)), data = subset(dat, age == "2yr"),
+                     linewidth = 0.5, color = "ivory", alpha = 0.8) + 
+     labs(title = "96 Weeks")) & 
+  scale_x_continuous(limits = c(-6,8.5)) &
+  scale_y_continuous(limits = c(-8.8,7.4)) &
+  theme_classic() &
+  theme(plot.title = element_text(hjust = 0.5,size=40), axis.text = element_text(size=20),axis.title = element_text(size=30)) &
+  NoLegend() & 
+  scale_fill_distiller(palette="Spectral", direction=-1) 
+densumap %>% ggsave("mglia_umap_faceted_density.png",.,width=12.167,height=6.083,dpi=600)
 
 # Figure 1E ----
 library(limma)
