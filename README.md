@@ -21,7 +21,7 @@ This repository contains the code needed to reproduce all results and plots in M
 
 **Fig_4_and_Fig_S4.R**: code needed to anchor integrate previously published human and mouse single-cell datasets with the data generated in this study and to produce the relevant plots in the manuscript. 
 
-**Fig_5_and_Fig_S5.R**: code needed to analyze data produced from running the Xenium multiplexed *in situ* transcriptomics workflow on cortical tissue sections from six human AD donors. Raw data is uploaded to Zenodo, accession number 10.5281/zenodo.8206638, along with the processed anndata files and the full-slide scans taken after subsequent methoxy-X04 staining.
+**Fig_5_and_Fig_S5.R**: code needed to analyze data produced from running the Xenium multiplexed *in situ* transcriptomics workflow on cortical tissue sections from six human AD donors. Raw data is uploaded to Zenodo, accession number 10.5281/zenodo.8206638, along with the processed anndata file and the full-slide scans taken after subsequent methoxy-X04 staining.
 
 > *Accompanying code: Xenium.ipynb*: This provides the squidpy code used to analyze and annotate the raw data from the Xenium machine before data was exported to R for plotting.
 
