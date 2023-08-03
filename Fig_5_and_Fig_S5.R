@@ -75,14 +75,15 @@ ggplot(data = merged_means) +
   geom_vline(xintercept = 1, lwd = 1, linetype = "dashed") +
   geom_segment(aes(y=cluster,yend=cluster,x=ApoE3,xend=ApoE4), lwd = 1.5) +
   geom_point(data = melted_merged_means, aes(y=cluster,x=value,fill=variable), shape=21, size=7.5, stroke = 1.5) +
-  geom_text(aes(x=label_pos,y=cluster,label=pval), vjust = -0.5, size = 6) +
+  geom_text(aes(x=label_pos,y=cluster,label=pval), vjust = -0.5, size = 9) +
   theme_bw(base_size = 24) +
   labs(x="Fold Increase in Likelihood over Chance of Cell Type\nBeing Present within 1000 Pixels of TIMs",y="",fill="Genotype") +
   scale_fill_manual(values = c("firebrick3","dodgerblue3")) +
   scale_x_break(c(1.2, 1.39)) +
+  scale_x_continuous(breaks = c(1, 1.1, 1.4, 1.5), position = "bottom") +
   expand_limits(x=1.5) +
-  theme(axis.text.y = element_text(color = cols_for_plot))
-ggsave("e4vse3_barbells.png",dpi=600,width=15,height=11.25)
+  theme(axis.text.y = element_text(color = cols_for_plot), axis.text = element_text(size = 25))
+ggsave("e4vse3_barbells.png",dpi=600,width=13.466,height=15.870)
 
 # now switching to metadata
 md = fread("xenium_md.csv")
@@ -97,9 +98,9 @@ good_samps %>%
   geom_bar(stat = "summary", fun = "mean") +
   scale_fill_manual(values = c("firebrick3","dodgerblue3")) +
   theme_bw(base_size = 24) +
-  labs(x="",y="Frequency of TIMs (% of Microglia)") +
-  theme(legend.position = "none")
-ggsave("tims_per_genotype.png",dpi=600,width=8,height=8)
+  labs(x="",y="Frequency of TIMs\n(% of Microglia)") +
+  theme(legend.position = "none", axis.text.x = element_text(size=30))
+ggsave("tims_per_genotype.png",dpi=600,width=8,height=6.5)
 
 # make spatial plots
 library(patchwork)
@@ -169,6 +170,29 @@ png("spatial_legend.png",res=600,width=5,height=10,units='in')
 grid.newpage()
 grid.draw(legend)
 dev.off()
+
+# Fig. 5E ----
+methoxy_e3 = ggplot(md[x_centroid > 6200 & x_centroid < 10500 & y_centroid > 300 & y_centroid < 3500 & sample == "E3_3"]) + 
+  geom_point(aes(x=x_centroid,y=y_centroid, color=subclust, size=size)) +
+  scale_size_manual(values = c(8,0.5)) +
+  theme_void(base_size=24) + 
+  guides(size="none", color=guide_legend(override.aes = list(size=5))) +
+  labs(x="Horizontal Pixels",y="Vertical Pixels",color="Cluster",title="") +
+  scale_color_manual(values = scales::hue_pal(h.start = 300)(22), limits = levels(md$subclust), labels = levels(md$subclust)) +
+  theme(legend.position = "none") +
+  scale_y_reverse()
+ggsave("methoxy_zoom_e3.png",methoxy_e3,dpi=600,width=9,height=9,bg = "white")
+
+methoxy_e4 = ggplot(md[x_centroid > 0 & x_centroid < 2000 & y_centroid > 5500 & y_centroid < 9000 & sample == "E4_2"]) + 
+  geom_point(aes(x=x_centroid,y=y_centroid, color=subclust, size=size)) +
+  scale_size_manual(values = c(8,0.5)) +
+  theme_void(base_size=24) + 
+  guides(size="none", color=guide_legend(override.aes = list(size=5))) +
+  labs(x="Horizontal Pixels",y="Vertical Pixels",color="Cluster",title="") +
+  scale_color_manual(values = scales::hue_pal(h.start = 300)(22), limits = levels(md$subclust), labels = levels(md$subclust)) +
+  theme(legend.position = "none") +
+  scale_y_reverse()
+ggsave("methoxy_zoom_e4.png",methoxy_e4,dpi=600,width=9,height=9,bg = "white")
 
 # Fig. S5B ----
 spatplotter = function(samp,donor){
