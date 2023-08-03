@@ -192,7 +192,7 @@ dat[, frac := N/sum(N), by = age]
   ggsave("mtx_directory/fracs_mglia_byage.png",.,
          dpi=600,width=16000,height=6000,units="px")
 
-# Figure 1B ----
+# Fig. 1B ----
 adapoe$labs_forumap = str_wrap(adapoe$clust_id, width=10)
 (DimPlot(adapoe, label = TRUE, repel = TRUE, label.size = 10, group.by = "labs_forumap") + NoLegend() + 
     theme(plot.title = element_blank(),
@@ -201,7 +201,7 @@ adapoe$labs_forumap = str_wrap(adapoe$clust_id, width=10)
           plot.margin = margin(0,15,0,0))) %>% 
   ggsave("adapoe_umap.png",.,width=14,height=17.323,dpi=600)
 
-# Figure 1C ----
+# Fig. 1C ----
 (DimPlot(mglia, group.by = "mglia_ident") +
    theme(plot.title = element_blank(),
          axis.text = element_text(size=20),
@@ -211,7 +211,7 @@ adapoe$labs_forumap = str_wrap(adapoe$clust_id, width=10)
    guides(color=guide_legend(ncol=1,override.aes = list(size = 5),byrow = TRUE))) %>% 
   ggsave("mglia_umap.png",.,width=14.06,height=10.935,dpi=600)
 
-# Figure 1D ----
+# Fig. 1D ----
 dat = mglia@reductions$umap@cell.embeddings %>% as.data.frame
 dat$age = mglia$age
 densumap = (ggplot(dat, aes(x=UMAP_1,y=UMAP_2)) + 
@@ -237,7 +237,7 @@ densumap = (ggplot(dat, aes(x=UMAP_1,y=UMAP_2)) +
   scale_fill_distiller(palette="Spectral", direction=-1) 
 densumap %>% ggsave("mglia_umap_faceted_density.png",.,width=12.167,height=6.083,dpi=600)
 
-# Figure 1E ----
+# Fig. 1E ----
 library(limma)
 library(edgeR)
 library(ggrepel)
@@ -290,7 +290,7 @@ volcano = ggplot(top.table, aes(x = logFC, y = logB)) +
   NoLegend()
 ggsave("limma_volcano_tim_v_other_mglia.png",volcano,dpi=600,width=11.726,height=11.726,units="in")
 
-# Prep files for Figure 1F (generated in python) ----
+# Prep files for Fig. 1F (generated in python) ----
 seurat = subset(adapoe, orig.ident == "E4_2yr") # repeat this for E3_2yr and the 20wk samples.
 cells = gsub(".*_(.+)-.*","\\1",Cells(seurat)) %>% as.data.frame
 embeddings = seurat@reductions$umap@cell.embeddings
@@ -302,7 +302,7 @@ fwrite(cells, "cells.csv", row.names = TRUE)
 fwrite(embeddings, "embeddings.csv", row.names = TRUE)
 fwrite(clusters, "clusters.csv", row.names = TRUE)
 
-# Figure 1G ----
+# Fig. 1G ----
 mglia_md = mglia@meta.data %>% as.data.table
 mglia_md = mglia_md[mglia_ident %in% levels(mglia)[16:18] & orig.ident %in% c("E3_2yr","E4_2yr")]
 setkey(mglia_md, mglia_ident, orig.ident)
@@ -323,7 +323,7 @@ plot = aggdat %>%
 
 ggsave("tim_subcluster_freqs_stacked.png",plot,width=12,height=4.2)
 
-# Figure S1A ----
+# Fig. S1A ----
 genes_toplot = c("P2ry12","Tmem119","Lars2","Bri3","Rgs1","Hspa1a","Hspb1","Numb","Trem2","Cst7","Apoe",
                  "Ifit3","Il34","Ier2","Adamts1","Ccl3","Fos","Arhgap45","Serpine1","H2-Aa","Cd74",
                  "Stmn1","Camp","Il1b","Rag1","Cd79a","Ace","F13a1","Cd209a","Ccr7","Adgre1",
@@ -336,7 +336,7 @@ genes_toplot = c("P2ry12","Tmem119","Lars2","Bri3","Rgs1","Hspa1a","Hspb1","Numb
     labs(color = "Average Expression", size = "Percent Expressed")
 ) %>% ggsave("markers_dotplot.pdf",.,height=20,width=40,dpi=600)
 
-# Figure S1C ----
+# Fig. S1C ----
 library(ggforce)
 
 mglia$ciara_val = ciara_aucell
@@ -354,7 +354,7 @@ center.coords = mglia@reductions$umap@cell.embeddings[rownames(mglia@reductions$
     guides(color = guide_colorbar(barheight=15))
 ) %>% ggsave("ciara_aucell_vals.png",.,width=26.139,height=18.432,dpi=600)
 
-# Figure S1D ----
+# Fig. S1D ----
 library(ranger)
 
 ## generate predictions
@@ -480,7 +480,7 @@ ht = Heatmap(conf_mat, cluster_rows = FALSE, cluster_columns = FALSE, rect_gp = 
 draw(ht, padding = unit(c(15,2,2,10),"mm"), heatmap_legend_side = "top")
 dev.off()
 
-# Figure S1E ----
+# Fig. S1E ----
 mglia_md = mglia@meta.data %>% as.data.table
 mglia_md[, agg := ifelse(mglia_ident %in% levels(mglia)[1:8], "Homeostatic", 
                          ifelse(mglia_ident %in% levels(mglia)[9:10], "DAMs",
@@ -504,7 +504,7 @@ plot = aggdat %>%
 
 ggsave("mglia_freqs_stacked_barplot.png",plot,width=10,height=14,dpi=600)
 
-# Figure S1F ----
+# Fig. S1F ----
 library(rstatix)
 library(ggpubr)
 md$istim = ifelse(md$subclust_id %in% c("TIMs","Effector-hi TIMs","Serpine1+ TIMs"),"TIM","Non-TIM")
