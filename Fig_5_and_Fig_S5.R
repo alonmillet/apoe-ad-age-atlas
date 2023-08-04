@@ -183,7 +183,7 @@ methoxy_e3 = ggplot(md[x_centroid > 6200 & x_centroid < 10500 & y_centroid > 300
   scale_y_reverse()
 ggsave("methoxy_zoom_e3.png",methoxy_e3,dpi=600,width=9,height=9,bg = "white")
 
-methoxy_e4 = ggplot(md[x_centroid > 0 & x_centroid < 2000 & y_centroid > 5500 & y_centroid < 9000 & sample == "E4_2"]) + 
+methoxy_e4 = ggplot(md[x_centroid > -500 & x_centroid < 2500 & y_centroid > 5000 & y_centroid < 9500 & sample == "E4_2"]) + 
   geom_point(aes(x=x_centroid,y=y_centroid, color=subclust, size=size)) +
   scale_size_manual(values = c(8,0.5)) +
   theme_void(base_size=24) + 
