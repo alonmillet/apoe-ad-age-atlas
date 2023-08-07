@@ -503,6 +503,7 @@ temp3 = rankNet(cc, mode = "comparison", stacked = T, do.stat = TRUE, comparison
 temp3 = temp3$signaling.contribution %>% as.data.table
 
 temp = rbind(temp1,temp2,temp3) %>% unique
+temp[name == "GAS", name := "GAS6"] #replace name for clarity
 temp = temp[, .(contmean = mean(contribution.scaled)), by = .(name,group)]
 temp$group = factor(temp$group, levels = c("E4+Aducanumab","E3+Aducanumab","E2+Aducanumab"))
 temp[, pctdiff := (max(contmean)-min(contmean))/min(contmean), by = name]
