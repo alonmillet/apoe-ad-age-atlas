@@ -198,7 +198,7 @@ ggsave("methoxy_zoom_e4.png",methoxy_e4,dpi=600,width=9,height=9,bg = "white")
 spatplotter = function(samp,donor){
   p = ggplot(md[sample == samp]) + 
     geom_point(aes(x=x_centroid,y=y_centroid, color=subclust, size=size)) +
-    scale_size_manual(values = c(6,0.5)) +
+    scale_size_manual(values = c(6,0.5), guide = "none") +
     theme_classic(base_size=24) + 
     guides(color=guide_legend(ncol=1, override.aes = list(size=5))) +
     labs(x="Horizontal Pixels",y="Vertical Pixels",color="Cluster",title=donor) +
