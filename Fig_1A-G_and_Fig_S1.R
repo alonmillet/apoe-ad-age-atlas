@@ -88,14 +88,14 @@ seurat = FindClusters(seurat, verbose = TRUE, resolution = 0.6)
 DimPlot(seurat, label = TRUE) + NoLegend()
 markers = FindAllMarkers(seurat, assay = "RNA", min.pct = 0.1, logfc.threshold = 0.1, only.pos = TRUE)
 fwrite(markers, "mtx_directory/mglia_markers.txt", sep = "\t")
-mglia.ident = c("Homeostatic Microglia","Effector-lo TIMs","Poised Homeostatic Microglia","Hspa1+ Stressed Microglia","Lars2-mid Homeostatic Microglia",
+mglia.ident = c("Homeostatic Microglia","Effector-lo TIMs","Poised-like Homeostatic Microglia","Hspa1+ Stressed Microglia","Lars2-mid Homeostatic Microglia",
                 "Ier2/5+ Inflammatory Microglia","DAM-2","Ccl3/4+ Inflammatory Microglia","Lars2-hi Homeostatic Microglia","Lars2-mid Homeostatic Microglia",
                 "Rgs1-hi Homeostatic Microglia","DAM-1","Adamts1+ Inflammatory Microglia","Interferon Induced Microglia","Effector-hi TIMs",
                 "Bri3-Negative Homeostatic Microglia","MHCII+ Microglia","Serpine1+ TIMs","Hspb1+ Stressed Microglia","Cd74+ Microglia","Cycling Microglia")
 names(mglia.ident) = levels(seurat)
 seurat = RenameIdents(seurat, mglia.ident)
 my_mglia_levels = c("Homeostatic Microglia","Lars2-mid Homeostatic Microglia","Lars2-hi Homeostatic Microglia","Bri3-Negative Homeostatic Microglia", "Rgs1-hi Homeostatic Microglia",
-                    "Hspa1+ Stressed Microglia","Hspb1+ Stressed Microglia","Poised Homeostatic Microglia","DAM-1","DAM-2","Interferon Induced Microglia","Ier2/5+ Inflammatory Microglia",
+                    "Hspa1+ Stressed Microglia","Hspb1+ Stressed Microglia","Poised-like Homeostatic Microglia","DAM-1","DAM-2","Interferon Induced Microglia","Ier2/5+ Inflammatory Microglia",
                     "Adamts1+ Inflammatory Microglia","Ccl3/4+ Inflammatory Microglia","Effector-lo TIMs","Effector-hi TIMs","Serpine1+ TIMs",
                     "MHCII+ Microglia","Cd74+ Microglia","Cycling Microglia")
 levels(seurat) = my_mglia_levels
