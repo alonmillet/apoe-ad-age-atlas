@@ -78,3 +78,21 @@ p2 = ggplot(timprops, aes(x=genotype,y=`Effector-lo TIMs`)) +
   theme(legend.position = "none")
 
 ((p2/p1) & ylim(0,26)) %>% ggsave("bisque_frequencies.png",.,dpi=600,width=11,height=10)
+
+# Figure S1G ----
+props.t = data.table(props[,2:16] %>% as.matrix %>% t)
+props.t$rn = c(rep("E2",5),rep("E3",5),rep("E4",5))
+colnames(props.t) = c(props$rn,'genotype')
+mean_props = props.t[,lapply(.SD,mean),by=genotype] %>% melt.data.table(id = "genotype")
+mean_props[variable == "TIMs", variable := "Effector-lo TIMs"] #rename
+mean_props$variable = factor(mean_props$variable, levels = levels(seu))
+
+mean_props.mat = dcast(mean_props, variable ~ genotype, value.var = "value")
+mean_props.mat = as.matrix(mean_props.mat[,2:4])
+rownames(mean_props.mat) = mean_props$variable %>% levels
+rownames(mean_props.mat)[8] = "Poised-like Homeostatic Microglia" #rename
+
+png("bisque_all_clusters.png",res=600,width=5,height=13.75,units='in')
+Heatmap(mean_props.mat, name = "Bisque\nFrequencies", cluster_rows = F, cluster_columns = F,
+        rect_gp = gpar(col = "black", lwd = 0.75), column_names_rot = 0)
+dev.off()
