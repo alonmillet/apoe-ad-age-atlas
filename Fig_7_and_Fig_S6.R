@@ -136,7 +136,7 @@ dat$samp = aduc.mglia$orig.ident
 dat$clust = aduc.mglia$mglia_ident
 aduc.mglia$label_densityplot = ifelse(aduc.mglia$mglia_ident %in% c("Lars2-hi Homeostatic Microglia","Lars2-mid Homeostatic Microglia","Rgs1-hi Homeostatic Microglia"), 
                                       "Homeostatic Microglia",as.character(aduc.mglia$mglia_ident)) %>% 
-  stringr::str_wrap(., width=10)
+  stringr::str_wrap(., width=10) # merge some less important clusters together for labeling
 
 p1 = DimPlot(aduc.mglia, label = T, repel = T, label.box = T, group.by = "label_densityplot", label.size = 5) + 
   ggtitle("Joint UMAP") +
