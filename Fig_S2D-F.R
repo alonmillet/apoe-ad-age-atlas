@@ -281,9 +281,9 @@ wdVolcanoPlot <- function (df, max_q=0.05, min_wd=0.1, max_wd=0.5, legend=TRUE,d
 }
 
 #set dpi to 300 while testing, set to 600 before saving
-## Fig. S2C ----
-wdVolcanoPlot(df_test_wd, max_q=0.2, min_wd=0.1, legend = FALSE, max_wd = 0.35, dpi = 600)
 ## Fig. S2D ----
-luiVolcanoPlot(df_test_lui, max_q=0.25, min_dlui=0.15, legend = FALSE, max_dlui = 0.3, dpi = 600)
+wdVolcanoPlot(df_test_wd, max_q=0.2, min_wd=0.1, legend = FALSE, max_wd = 0.35, dpi = 600)
 ## Fig. S2E ----
+luiVolcanoPlot(df_test_lui, max_q=0.25, min_dlui=0.15, legend = FALSE, max_dlui = 0.3, dpi = 600)
+## Fig. S2F ----
 ipaVolcanoPlot(df_test_ipa, max_q=0.5, min_dipa=0.05, legend = FALSE, max_dipa = 0.2, dpi = 600)
