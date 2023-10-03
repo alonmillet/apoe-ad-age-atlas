@@ -57,7 +57,7 @@ png("hmap2.png",width=16,height=6,units="in",res=600)
 draw(ht, heatmap_legend_side = "left", annotation_legend_side = "left", padding = unit(c(2,2,10,15),"mm"))
 dev.off()
 
-## Fig. S2B ----
+## Fig. S2C ----
 agg_toplot = as.matrix(dat_dt_toplot[,-1])
 agg_toplot = agg_toplot[, which(thresh>0.01 & thresh_max > 0.5)] # only select TFs with high variance and score
 rownames(agg_toplot) = dat_dt_toplot$ident
@@ -102,6 +102,93 @@ stat.test.dams = stat.test %>%
     labs(x="",y=expression(paste(italic("Smad4")," SCENIC Score"))) + 
     NoLegend()) %>% 
   ggsave("smad4_boxplot_grouped.png",.,dpi=600,width=12,height=12)
+
+# using scenic outputs as a seurat assay for DEG-like analysis
+library(ggplot2)
+library(patchwork)
+library(ggtext)
+
+dat = fread("~/pyscenic/10wk_20wk_2yr_integrated/mglia_only/scenic_aucell_output.csv")
+colnames(dat) = gsub("\\s*\\([^\\)]+\\)","",as.character(colnames(dat)))
+dat.t = dat[,-1] %>% transpose
+colnames(dat.t) = dat$Cell
+rownames(dat.t) = colnames(dat)[-1]
+mglia[['scenic']] = CreateAssayObject(dat.t)
+mglia$istim = ifelse(mglia$mglia_ident %in% levels(mglia)[16:18],"tim","nontim")
+mglia$grouping = ifelse(mglia$mglia_ident %in% levels(mglia)[c(1:5,8)], "Homeostatic",
+                        ifelse(mglia$mglia_ident %in% levels(mglia)[9:10], "DAMs",
+                               ifelse(mglia$mglia_ident %in% levels(mglia)[16:18], "TIMs",
+                                      ifelse(mglia$mglia_ident %in% levels(mglia)[11:15], "Inflammatory","Other Microglia"))))
+
+tim_nontim = FindMarkers(mglia, assay="scenic", ident.1 = "tim", ident.2 = "nontim", 
+                         group.by = "istim", logfc.threshold = 0, min.pct = 0, only.pos = F) %>% as.data.table(keep.rownames=T)
+efflo_effhi = FindMarkers(mglia, assay="scenic", ident.1 = "Effector-lo TIMs", ident.2 = "Effector-hi TIMs", 
+                          logfc.threshold = 0, min.pct = 0, only.pos = F) %>% as.data.table(keep.rownames=T)
+timdam = FindMarkers(mglia, assay="scenic", ident.1 = "TIMs", ident.2 = "DAMs", group.by = "grouping", 
+                     logfc.threshold = 0, min.pct = 0, only.pos = F) %>% as.data.table(keep.rownames=T)
+timhom = FindMarkers(mglia, assay="scenic", ident.1 = "TIMs", ident.2 = "Homeostatic", group.by = "grouping", 
+                     logfc.threshold = 0, min.pct = 0, only.pos = F) %>% as.data.table(keep.rownames=T)
+timinflam = FindMarkers(mglia, assay="scenic", ident.1 = "TIMs", ident.2 = "Inflammatory", group.by = "grouping", 
+                        logfc.threshold = 0, min.pct = 0, only.pos = F) %>% as.data.table(keep.rownames=T)
+
+# first compare TIMs to each major mglial macrocluster
+## Fig. S2B ----
+shared_list = Reduce(intersect,
+                     list(timdam[order(avg_log2FC)][c(1:20,(nrow(timdam)-19):nrow(timdam))]$rn,
+                          timhom[order(avg_log2FC)][c(1:20,(nrow(timhom)-19):nrow(timhom))]$rn,
+                          timinflam[order(avg_log2FC)][c(1:20,(nrow(timinflam)-19):nrow(timinflam))]$rn))
+
+lolliplotter = function(tbl,title){
+  tbl$p_val_adj = ifelse(tbl$p_val_adj == 0, 1e-300, tbl$p_val_adj)
+  tbl$logp = -log10(tbl$p_val_adj)
+  filt = tbl[order(avg_log2FC)][c(1:20,(nrow(tbl)-19):nrow(tbl))]
+  filt %<>%
+    mutate(rn = paste(ifelse(rn %in% shared_list,"<b>",""),
+                      rn,
+                      ifelse(rn %in% shared_list,"<b>",""))) %>%
+    mutate(rn = forcats::fct_reorder(rn, avg_log2FC))
+  plot = ggplot(filt) + 
+    geom_segment(aes(x=0,xend=avg_log2FC,y=rn,yend=rn),color="black") +
+    geom_point(aes(x=avg_log2FC,y=rn,fill=logp),shape=21,size=4) +
+    theme_linedraw() +
+    theme(axis.text.y = element_markdown()) +
+    labs(x="Log-2 Fold Change in TF Score",y="",fill="Log-10\nP-Value") +
+    ggtitle(title)
+  return(plot)
+}
+
+(wrap_plots(lolliplotter(timhom,"TIMs vs.\nHomeostatic Microglia"),
+            lolliplotter(timdam,"TIMs vs.\nDAMs"),
+            lolliplotter(timinflam,"TIMs vs.\nInflammatory Microglia")) +
+    plot_layout(guides="collect") &
+    scale_fill_continuous(limits = range(c(0, 300)))) %>% 
+  ggsave("tims_vs_mglial_superclusters_scenic.png",.,dpi=600,width=12,height=6,units="in")
+
+# now compare effector-lo TIMs to effector-hi TIMs
+## Fig. 2C ----
+lolliplotter_nobolding = function(tbl){
+  tbl$p_val_adj = ifelse(tbl$p_val_adj == 0, 1e-300, tbl$p_val_adj)
+  tbl$logp = -log10(tbl$p_val_adj)
+  filt = tbl[order(avg_log2FC)][c(1:20,(nrow(tbl)-19):nrow(tbl))]
+  filt %<>%
+    mutate(rn = forcats::fct_reorder(rn, avg_log2FC))
+  plot = ggplot(filt) + 
+    geom_segment(aes(y=0,yend=avg_log2FC,x=rn,xend=rn),color="black") +
+    geom_point(aes(y=avg_log2FC,x=rn,fill=logp),shape=21,size=4) +
+    theme_linedraw(base_size = 15) +
+    labs(y="Log-2 Fold Change in TF Score",x="",fill="Log-10\nP-Value") +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) 
+  return(plot)
+}
+(lolliplotter_nobolding(efflo_effhi) +
+    ggtitle("Effector-lo TIMs vs. Effector-hi TIMs")) %>% 
+  ggsave("efflo_vs_effhi_tims_scenic.png",.,dpi=600,width=8,height=4,units="in")
+
+# and now compare TIMs to all other non-TIMs
+## Fig. 2B ----
+(lolliplotter_nobolding(tim_nontim) +
+    ggtitle("TIMs vs. Non-TIM Microglia")) %>% 
+  ggsave("tims_vs_nontims_scenic.png",.,dpi=600,width=8,height=4,units="in")
 
 
 # CellPhoneDB ----
@@ -274,7 +361,7 @@ heatmaps_plot(meta_file = "cpdb_metadata.txt",
 
 
 
-### Fig. 2B ----
+### Fig. 2D ----
 dat = fread("deconvoluted.txt")
 dat = subset(dat, !duplicated(dat[,complex_name]))
 dat[complex_name == "", complex_name := protein_name]
@@ -329,7 +416,7 @@ comp %>%
 
 fwrite(comp, "tim_hom_comp.csv") # for comparing to 1yr multiome in Fig. 3
 
-### Fig. 2C ----
+### Fig. 2E ----
 comp$score = comp$TIMs - comp$DAMs
 comp$label = ifelse(comp$score > 0.2 | comp$score < -0.2, comp$complex_name, "")
 
@@ -361,7 +448,7 @@ comp %>%
 
 fwrite(comp, "tim_dam_comp.csv") # for comparing to 1yr multiome in Fig. 3
 
-### Fig. 2D ----
+### Fig. 2F ----
 dat = fread("network.txt") # output from running heatmaps_plot function
 dat = dcast(dat, SOURCE ~ TARGET, value.var = "count")
 dat.m = as.matrix(dat[,-1])
@@ -399,7 +486,7 @@ circos.track(track.index = 1, panel.fun = function(x, y) {
 }, bg.border = NA)
 dev.off()
 
-### Fig. 2E ----
+### Fig. 2G ----
 group_barplot = structure(c(rep("Homeostatic",5),rep("Other Microglia",2),"Homeostatic",rep("DAMs",2),rep("Inflammatory",5),
                             rep("TIMs",3),rep("Other Microglia",3),rep("Non-Microglia",16)),
                           names = rownames(dat.m))
@@ -515,7 +602,7 @@ png("hmap_means_by_genoandclust.png",width=20,height=15,units="in",res=600)
 draw(ht2)
 dev.off()
 
-## Fig. 2F ----
+## Fig. 2H ----
 library(ggblend)
 library(ggtext)
 rc = t(reaction.consistencies) %>% as.data.table(keep.rownames = TRUE)
