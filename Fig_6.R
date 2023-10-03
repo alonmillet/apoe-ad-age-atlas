@@ -198,6 +198,11 @@ p1 = DimPlot(abeta.mglia, label = T, repel = T, label.box = T, label.size = 5.5,
   theme_classic(base_size = 20) +
   theme(plot.title = element_text(hjust = 0.5)) + 
   NoLegend()
+p1_alt =  DimPlot(abeta.mglia, group.by = "label_densityplot") + 
+  ggtitle("Joint UMAP") +
+  theme_classic(base_size = 20) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  NoLegend()
 p2 = (ggplot(dat, aes(x=UMAP_1,y=UMAP_2)) + 
         geom_point(color = "gray", alpha = 0.4) +
         stat_density_2d(geom = "density_2d_filled", contour = T, aes(fill = after_stat(level)), data = subset(dat, uptake == "hi"),
@@ -237,7 +242,7 @@ p3 = (ggplot(dat, aes(x=UMAP_1,y=UMAP_2)) +
   scale_fill_distiller(palette="Spectral", direction=-1)
 
 (p1 / p3) %>% ggsave("umap_density_bygeno.png",.,dpi=600,width=10,height=10)
-((p1 | p2) + plot_layout(widths = c(1.5,2))) %>% ggsave("umap_density_byuptake.png",.,dpi=600,width=15.4,height=6.1)
+((p1_alt | p2) + plot_layout(widths = c(1.5,2))) %>% ggsave("umap_density_byuptake.png",.,dpi=600,width=15.4,height=6.1)
 (((p1 | p2) + plot_layout(widths = c(1,2))) / p3) %>% ggsave("umap_density_combo.png",.,dpi=600,width=14,height=14)
 
 ## Fig. 6B ----
