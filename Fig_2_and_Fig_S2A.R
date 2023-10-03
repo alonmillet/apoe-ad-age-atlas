@@ -21,7 +21,7 @@ thresh = dat_dt[, lapply(.SD, sd), .SDcols = names(dat_dt)[1:(ncol(dat_dt)-1)]] 
 rangediff = function(x){return(max(x)-min(x))}
 thresh_max = dat_dt_toplot[, lapply(.SD, rangediff), .SDcols = names(dat_dt_z)[1:(ncol(dat_dt)-1)]] %>% unlist %>% unname
 agg_toplot = as.matrix(dat_dt_toplot[,-1])
-agg_toplot = agg_toplot[, which(thresh>0.025 & thresh_max > 1.75)]
+agg_toplot = agg_toplot[, which(thresh>0.025 & thresh_max > 1.75)] # only select TFs with high variance and score
 rownames(agg_toplot) = dat_dt_toplot$ident
 o1 = seriation::seriate(dist(agg_toplot), method = "GW")
 o2 = seriation::seriate(dist(t(agg_toplot)), method = "GW")
@@ -41,7 +41,7 @@ dev.off()
 
 ## Fig. 2A ----
 agg_toplot = as.matrix(dat_dt_toplot[,-1])
-agg_toplot = agg_toplot[, which(thresh>0.03 & thresh_max > 2)]
+agg_toplot = agg_toplot[, which(thresh>0.03 & thresh_max > 2)] # only select TFs with high variance and score
 rownames(agg_toplot) = dat_dt_toplot$ident
 o1 = seriation::seriate(dist(agg_toplot), method = "GW")
 o2 = seriation::seriate(dist(t(agg_toplot)), method = "GW")
@@ -57,12 +57,11 @@ png("hmap2.png",width=16,height=6,units="in",res=600)
 draw(ht, heatmap_legend_side = "left", annotation_legend_side = "left", padding = unit(c(2,2,10,15),"mm"))
 dev.off()
 
-## Fig. 2B ----
+## Fig. S2B ----
 agg_toplot = as.matrix(dat_dt_toplot[,-1])
-agg_toplot = agg_toplot[, which(thresh>0.01 & thresh_max > 0.5)]
+agg_toplot = agg_toplot[, which(thresh>0.01 & thresh_max > 0.5)] # only select TFs with high variance and score
 rownames(agg_toplot) = dat_dt_toplot$ident
-agg_toplot_filt = agg_toplot[rownames(agg_toplot) %in% c("Effector-hi TIMs","Effector-lo TIMs","Serpine1+ TIMs","Homeostatic Microglia",
-                                                         "Lars2-mid Homeostatic Microglia","Lars2-hi Homeostatic Microglia"),]
+agg_toplot_filt = agg_toplot
 agg_toplot_filt = agg_toplot_filt[,colnames(agg_toplot) %in% c(ap1_fam,irf_fam)]
 o1 = seriation::seriate(dist(agg_toplot_filt), method = "GW")
 o2 = seriation::seriate(dist(t(agg_toplot_filt)), method = "GW")
@@ -73,8 +72,8 @@ ht = Heatmap(agg_toplot_filt, name = "Aggregated\nModules", bottom_annotation = 
              rect_gp = gpar(col = "black", lwd = 0.25), cluster_columns = as.dendrogram(o2[[1]]), column_gap = unit(5,"mm"), row_gap = unit(2,"mm"),
              row_title = c(), column_title = c(),
              heatmap_legend_param = list(title = "Aggregated Transcription Factor Z-Scores", title_position = "leftcenter-rot", legend_height = unit(8,"cm")))
-png("hmap_ap1_ifn_only.png",width=10,height=4,units="in",res=600)
-draw(ht, heatmap_legend_side = "left", annotation_legend_side = "bottom", padding = unit(c(2,2,2,2),"mm"))
+png("hmap_ap1_ifn_only.png",width=10,height=8,units="in",res=600)
+draw(ht, heatmap_legend_side = "left", annotation_legend_side = "bottom", padding = unit(c(2,2,2,10),"mm"))
 dev.off()
 
 ## Fig. S2A ----
@@ -275,7 +274,7 @@ heatmaps_plot(meta_file = "cpdb_metadata.txt",
 
 
 
-### Fig. 2C ----
+### Fig. 2B ----
 dat = fread("deconvoluted.txt")
 dat = subset(dat, !duplicated(dat[,complex_name]))
 dat[complex_name == "", complex_name := protein_name]
@@ -330,7 +329,7 @@ comp %>%
 
 fwrite(comp, "tim_hom_comp.csv") # for comparing to 1yr multiome in Fig. 3
 
-### Fig. 2D ----
+### Fig. 2C ----
 comp$score = comp$TIMs - comp$DAMs
 comp$label = ifelse(comp$score > 0.2 | comp$score < -0.2, comp$complex_name, "")
 
@@ -362,7 +361,7 @@ comp %>%
 
 fwrite(comp, "tim_dam_comp.csv") # for comparing to 1yr multiome in Fig. 3
 
-### Fig. 2E ----
+### Fig. 2D ----
 dat = fread("network.txt") # output from running heatmaps_plot function
 dat = dcast(dat, SOURCE ~ TARGET, value.var = "count")
 dat.m = as.matrix(dat[,-1])
@@ -400,7 +399,7 @@ circos.track(track.index = 1, panel.fun = function(x, y) {
 }, bg.border = NA)
 dev.off()
 
-### Fig. 2F ----
+### Fig. 2E ----
 group_barplot = structure(c(rep("Homeostatic",5),rep("Other Microglia",2),"Homeostatic",rep("DAMs",2),rep("Inflammatory",5),
                             rep("TIMs",3),rep("Other Microglia",3),rep("Non-Microglia",16)),
                           names = rownames(dat.m))
@@ -516,7 +515,7 @@ png("hmap_means_by_genoandclust.png",width=20,height=15,units="in",res=600)
 draw(ht2)
 dev.off()
 
-## Fig. 2G ----
+## Fig. 2F ----
 library(ggblend)
 library(ggtext)
 rc = t(reaction.consistencies) %>% as.data.table(keep.rownames = TRUE)
