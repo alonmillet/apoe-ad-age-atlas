@@ -90,14 +90,14 @@ aduc.mglia = RunUMAP(aduc.mglia, dims = 1:46, verbose = TRUE)
 aduc.mglia = FindNeighbors(aduc.mglia, dims = 1:46, verbose = TRUE)
 aduc.mglia = FindClusters(aduc.mglia, verbose = TRUE, resolution = 0.6)
 markers = FindAllMarkers(aduc.mglia, assay = "RNA", min.pct = 0.3, logfc.threshold = 0.3, only.pos = TRUE) %>% as.data.table
-mglia.ident = c("Homeostatic Microglia","DAMs","Poised Homeostatic Microglia",
+mglia.ident = c("Homeostatic Microglia","DAMs","Poised-like Homeostatic Microglia",
                 "Lars2-mid Homeostatic Microglia","Effector-hi TIMs","Effector-lo TIMs","Ccl3/4+ Inflammatory Microglia","Lars2-hi Homeostatic Microglia",
                 "Bri3-Negative Homeostatic Microglia","Lars2-hi Homeostatic Microglia","Interferon Induced Microglia",
-                "Poised Homeostatic Microglia","DAMs","Rgs1-hi Homeostatic Microglia","Jchain+ Microglia") 
+                "Poised-like Homeostatic Microglia","DAMs","Rgs1-hi Homeostatic Microglia","Jchain+ Microglia") 
 names(mglia.ident) = levels(aduc.mglia)
 aduc.mglia = RenameIdents(aduc.mglia, mglia.ident)
 my_mglia_levels = c("Homeostatic Microglia","Lars2-mid Homeostatic Microglia","Lars2-hi Homeostatic Microglia","Bri3-Negative Homeostatic Microglia",
-                    "Rgs1-hi Homeostatic Microglia","Poised Homeostatic Microglia","DAMs","Interferon Induced Microglia","Ccl3/4+ Inflammatory Microglia",
+                    "Rgs1-hi Homeostatic Microglia","Poised-like Homeostatic Microglia","DAMs","Interferon Induced Microglia","Ccl3/4+ Inflammatory Microglia",
                     "Effector-lo TIMs","Effector-hi TIMs","Jchain+ Microglia")
 levels(aduc.mglia) = my_mglia_levels
 aduc.mglia$mglia_ident = Idents(aduc.mglia)
@@ -206,7 +206,7 @@ p3 = (ggplot(dat, aes(x=UMAP_1,y=UMAP_2)) +
 (((p1 | p2) + plot_layout(widths = c(1,2))) / p3) %>% ggsave("umap_density_combo.png",.,dpi=600,width=18,height=12.9)
 
 # Fig. S6A ----
-poised = FindMarkers(aduc.mglia, ident.1 = "Homeostatic Microglia", ident.2 = "Poised Homeostatic Microglia", 
+poised = FindMarkers(aduc.mglia, ident.1 = "Homeostatic Microglia", ident.2 = "Poised-like Homeostatic Microglia", 
                      test.use = "MAST", assay = "RNA", min.pct = 0.01, logfc.threshold = 0.01) %>% as.data.table(keep.rownames = T)
 poised$logp = -log10(poised$p_val_adj)
 pval_cutoff = quantile(poised$logp, 0.975)
@@ -229,7 +229,7 @@ vol = ggplot(poised, aes(x = avg_log2FC, y = logp)) +
   geom_hline(yintercept = pval_cutoff) +
   geom_text(data = data.frame(xpos = c(-(logfc_cutoff+0.05), logfc_cutoff+0.05), 
                               ypos = c(0, 0), hjustvar = c(1,0), vjustvar = c(0,0), 
-                              annotateText = c(paste0("Poised Homeostatic ",sprintf('\U2190')),
+                              annotateText = c(paste0("Poised-like Homeostatic ",sprintf('\U2190')),
                                                paste0(sprintf('\U2192')," Homeostatic"))),
             aes(x=xpos, y=ypos, hjust=hjustvar, vjust=vjustvar, label=annotateText), size = 5) +
   theme_bw(base_size = 14) + 
@@ -267,9 +267,9 @@ setkey(md, subclust_id, tx)
 dat = md[microglia == TRUE][CJ(subclust_id, tx, unique = TRUE),.N,by=.EACHI]
 dat[, frac := N/sum(N), by = tx]
 dat = dat[subclust_id %in% c("Homeostatic Microglia","Effector-lo TIMs",
-                             "Poised Homeostatic Microglia","DAMs","Effector-hi TIMs")]
+                             "Poised-kike Homeostatic Microglia","DAMs","Effector-hi TIMs")]
 dat$subclust_id = factor(dat$subclust_id, levels = rev(c("Homeostatic Microglia","Effector-lo TIMs",
-                                                         "Poised Homeostatic Microglia","DAMs","Effector-hi TIMs")))
+                                                         "Poised-like Homeostatic Microglia","DAMs","Effector-hi TIMs")))
 (ggplot(dat, aes(x=subclust_id,y=frac,group=tx,fill=tx)) + 
     geom_bar(position="dodge",stat="identity",color="black", width = 0.7) + 
     scale_fill_manual(values = rev(scales::hue_pal()(2)), 
