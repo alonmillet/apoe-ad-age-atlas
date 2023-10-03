@@ -143,6 +143,11 @@ p1 = DimPlot(aduc.mglia, label = T, repel = T, label.box = T, group.by = "label_
   theme_classic(base_size = 20) +
   theme(plot.title = element_text(hjust = 0.5)) + 
   NoLegend()
+p1_alt = DimPlot(aduc.mglia, group.by = "label_densityplot") + 
+  ggtitle("Joint UMAP") +
+  theme_classic(base_size = 20) +
+  theme(plot.title = element_text(hjust = 0.5)) + 
+  NoLegend()
 p2 = (ggplot(dat, aes(x=UMAP_1,y=UMAP_2)) + 
         geom_point(color = "gray", alpha = 0.4) +
         stat_density_2d(geom = "density_2d_filled", contour = T, aes(fill = after_stat(level)), data = subset(dat, tx == "isocon"),
@@ -177,7 +182,7 @@ p2_alt = (ggplot(dat, aes(x=UMAP_1,y=UMAP_2)) +
   NoLegend() & 
   scale_fill_distiller(palette="Spectral", direction=-1)
 
-(p1 | p2_alt) %>% ggsave("umap_density_bytx.png",.,dpi=600,width=10,height=10)
+(p1_alt | p2_alt) %>% ggsave("umap_density_bytx.png",.,dpi=600,width=10,height=10)
 
 ## split by genotype ----
 p3 = (ggplot(dat, aes(x=UMAP_1,y=UMAP_2)) + 
