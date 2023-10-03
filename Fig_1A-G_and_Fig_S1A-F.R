@@ -14,6 +14,7 @@ mtx_directory = "path/to/mtx/files"
 dir_list = list.files(mtx_directory)
 adapoe = NULL
 
+# load in data, filter, and merge
 for (i in seq_along(dir_list)){
   # Load in data
   tmp = Read10X(paste0(mtx_directory,"/", dir_list[i]))
