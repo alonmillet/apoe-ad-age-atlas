@@ -88,13 +88,13 @@ abeta.mglia = RunUMAP(abeta.mglia, dims = 1:46, verbose = TRUE)
 abeta.mglia = FindNeighbors(abeta.mglia, dims = 1:46, verbose = TRUE)
 abeta.mglia = FindClusters(abeta.mglia, verbose = TRUE, resolution = 0.8)
 markers = FindAllMarkers(abeta.mglia, assay = "RNA", min.pct = 0.3, logfc.threshold = 0.3, only.pos = TRUE) %>% as.data.table
-mglia.ident = c("Poised Homeostatic Microglia","Homeostatic Microglia","Ribosome-hi Homeostatic Microglia","Lars2-mid Homeostatic Microglia","DAM-1","Effector-hi TIMs",
+mglia.ident = c("Poised-like Homeostatic Microglia","Homeostatic Microglia","Ribosome-hi Homeostatic Microglia","Lars2-mid Homeostatic Microglia","DAM-1","Effector-hi TIMs",
                 "Bri3-Negative Homeostatic Microglia","Interferon Induced Microglia","Effector-lo TIMs","DAM-2","Lars2-hi Homeostatic Microglia",
                 "Cd74+ Microglia")
 names(mglia.ident) = levels(abeta.mglia)
 abeta.mglia = RenameIdents(abeta.mglia, mglia.ident)
 my_mglia_levels = c("Homeostatic Microglia","Lars2-mid Homeostatic Microglia","Lars2-hi Homeostatic Microglia","Bri3-Negative Homeostatic Microglia",
-                    "Ribosome-hi Homeostatic Microglia","Poised Homeostatic Microglia","DAM-1","DAM-2","Interferon Induced Microglia",
+                    "Ribosome-hi Homeostatic Microglia","Poised-like Homeostatic Microglia","DAM-1","DAM-2","Interferon Induced Microglia",
                     "Effector-lo TIMs","Effector-hi TIMs","Cd74+ Microglia")
 levels(abeta.mglia) = my_mglia_levels
 abeta.mglia$mglia_ident = Idents(abeta.mglia)
@@ -134,7 +134,7 @@ chisq.calc = function(clust){
   chisq = tab[,((hi-expect)^2)/expect,by=iter] %>% sum
   return(pchisq(2*chisq, df = 2,lower.tail=F))
 }
-these.clusters = c("Homeostatic Microglia","Poised Homeostatic Microglia",
+these.clusters = c("Homeostatic Microglia","Poised-like Homeostatic Microglia",
                    "Ribosome-hi Homeostatic Microglia","Interferon Induced Microglia",
                    "Effector-lo TIMs","Effector-hi TIMs")
 chisqs = data.table(mglia_ident = these.clusters,
