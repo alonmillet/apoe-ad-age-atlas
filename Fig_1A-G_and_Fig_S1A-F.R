@@ -512,10 +512,10 @@ md$istim = ifelse(md$subclust_id %in% c("TIMs","Effector-hi TIMs","Serpine1+ TIM
 md$istim = factor(md$istim, levels = c("TIM","Non-TIM"))
 stat.test = md %>% wilcox_test(miQC.probability ~ istim) %>% add_significance() %>% add_xy_position(x = "istim")
 (ggplot(md, aes(x=istim,y=miQC.probability)) +
-    geom_boxplot(aes(fill=istim), outlier.size = 2, size = 1) + 
-    stat_pvalue_manual(stat.test, label = "p = {p}", vjust = -0.25, bracket.nudge.y = 0.1, size = 5) +
-    theme_bw(base_size = 15) + 
+    geom_boxplot(aes(fill=istim), outlier.size = 4, size = 2) + 
+    stat_pvalue_manual(stat.test, label = "p = {p}", vjust = -0.25, bracket.nudge.y = 0.1, size = 7) +
+    theme_bw(base_size = 20) + 
     theme(legend.position = "none") +
     ylim(0,0.9) +
     labs(x="",y="miQC Score",title="Probability of Low Cell Quality\nby TIM Assignment")) %>% 
-  ggsave("tim_miqc.png",.,dpi=600,height=4,width=5)
+  ggsave("tim_miqc.png",.,dpi=600,height=9.5,width=7)
