@@ -482,6 +482,61 @@ draw(ht, padding = unit(c(15,2,2,10),"mm"), heatmap_legend_side = "top")
 dev.off()
 
 # Fig. S1E ----
+mglia$grouping = ifelse(mglia$mglia_ident %in% levels(mglia)[c(1:5,8)], "Homeostatic", 
+                        ifelse(mglia$mglia_ident %in% levels(mglia)[6:7], "Stressed",
+                               ifelse(mglia$mglia_ident %in% levels(mglia)[9:10], "DAMs",
+                                      ifelse(mglia$mglia_ident %in% levels(mglia)[11:15], "Inflammatory",
+                                             ifelse(mglia$mglia_ident %in% levels(mglia)[16:18], "TIMs","Other_Microglia")))))
+
+## calculate DEG statistics
+expr = mglia@assays$RNA@counts
+d0 = DGEList(expr)
+d0 = calcNormFactors(d0)
+d = d0[-which(apply(cpm(d0),1,max)<1),]
+mm = model.matrix(~0 + grouping, data = mglia@meta.data)
+rm(d0) # for memory clearance
+gc()
+y = voom(d, mm, plot = F)
+fit = lmFit(y,mm)
+saveRDS(fit,"temp_fit.rds")
+
+options(ggrepel.max.overlaps = Inf)
+volplotter = function(tmp,tit){
+  top.table = topTable(tmp, sort.by = "B", n = Inf)
+  top.table$logB = ifelse(top.table$B < 1, 0, log2(top.table$B))
+  top.table$gene = rownames(top.table)
+  top.table = as.data.table(top.table)
+  b_cutoff = log(100) # this is equivalent to 100-to-1 log-odds of differential expression
+  logfc_cutoff = 0.5
+  top.table[, in_zone := ifelse(abs(logFC) >= logfc_cutoff & logB >= b_cutoff, TRUE, FALSE)]
+  top.table$label = FALSE
+  top.table[logFC > 0, label := ifelse(logFC >= .SD$logFC[kit::topn(.SD$logFC, 15, decreasing = T)[15]], TRUE, FALSE)]
+  top.table[logFC < 0, label := ifelse(-logFC >= -.SD$logFC[kit::topn(-.SD$logFC, 15, decreasing = T)[15]], TRUE, FALSE)]
+  top.table[, group := ifelse(abs(logFC) >= logfc_cutoff & logB >= b_cutoff, "Hit", "Filter")]
+  top.table$group = factor(top.table$group, levels = c("Hit","Filter"))
+  volcano = ggplot(top.table, aes(x = logFC, y = logB)) +
+    geom_point(aes(color = top.table$group)) +
+    scale_color_manual(values = c("blue","gray")) +
+    geom_text_repel(label = ifelse(top.table$label==TRUE,top.table$gene,''),
+                    size = 4, force = 10, box.padding = 0.2, point.padding = 0.2, segment.size = 0.1, min.segment.length = 0.1, max.iter = 1e7) +
+    geom_vline(xintercept = -logfc_cutoff) + 
+    geom_vline(xintercept = logfc_cutoff) + 
+    geom_hline(yintercept = b_cutoff) +
+    theme_bw() + 
+    labs(x = "Log-2 Fold Change", y = "Log-2 B-Value") + 
+    NoLegend() +
+    ggtitle(tit)
+  return(volcano)
+}
+
+
+contr = makeContrasts(groupingTIMs - groupingStressed, levels=colnames(coef(fit)))
+tmp = contrasts.fit(fit, contr)
+tmp = eBayes(tmp, trend = TRUE)
+ggsave("volplot_tim_stressed.png",volplotter(tmp,"TIMs vs. Stressed Microglia"),dpi=600,width=8,height=4,units="in")
+# repeat for each other contrast
+
+# Fig. S1F ----
 mglia_md = mglia@meta.data %>% as.data.table
 mglia_md[, agg := ifelse(mglia_ident %in% levels(mglia)[1:8], "Homeostatic", 
                          ifelse(mglia_ident %in% levels(mglia)[9:10], "DAMs",
@@ -505,7 +560,7 @@ plot = aggdat %>%
 
 ggsave("mglia_freqs_stacked_barplot.png",plot,width=7,height=10,dpi=600)
 
-# Fig. S1F ----
+# Fig. S1G ----
 library(rstatix)
 library(ggpubr)
 md$istim = ifelse(md$subclust_id %in% c("TIMs","Effector-hi TIMs","Serpine1+ TIMs"),"TIM","Non-TIM")
