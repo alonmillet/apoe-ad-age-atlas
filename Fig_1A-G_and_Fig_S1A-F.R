@@ -500,10 +500,10 @@ plot = aggdat %>%
   ggplot(.,aes(x=orig.ident,y=100*frac,fill=agg)) + 
   geom_bar(stat = "identity", position = "stack",color="black", linewidth=1) + 
   labs(x = "",y="Fraction of Microglia (%)",fill="Microglial\nSupercluster") + 
-  theme_classic(base_size = 25) + 
+  theme_classic(base_size = 15) + 
   coord_flip()
 
-ggsave("mglia_freqs_stacked_barplot.png",plot,width=10,height=14,dpi=600)
+ggsave("mglia_freqs_stacked_barplot.png",plot,width=7,height=10,dpi=600)
 
 # Fig. S1F ----
 library(rstatix)
@@ -512,10 +512,10 @@ md$istim = ifelse(md$subclust_id %in% c("TIMs","Effector-hi TIMs","Serpine1+ TIM
 md$istim = factor(md$istim, levels = c("TIM","Non-TIM"))
 stat.test = md %>% wilcox_test(miQC.probability ~ istim) %>% add_significance() %>% add_xy_position(x = "istim")
 (ggplot(md, aes(x=istim,y=miQC.probability)) +
-    geom_boxplot(aes(fill=istim), outlier.shape = NA, size = 2) + 
-    stat_pvalue_manual(stat.test %>% mutate(y.position=0.45), label = "p = {p}", vjust = -0.25, size = 15) +
-    theme_bw() + 
-    ylim(0,0.5) +
-    theme(legend.position = "none", axis.text = element_text(size=40), axis.title = element_text(size=45)) +
-    labs(x="",y="miQC Score")) %>% 
-  ggsave("tim_miqc_nooutlier.png",.,dpi=600,height=20,width=20)
+    geom_boxplot(aes(fill=istim), outlier.size = 2, size = 1) + 
+    stat_pvalue_manual(stat.test, label = "p = {p}", vjust = -0.25, bracket.nudge.y = 0.1, size = 5) +
+    theme_bw(base_size = 15) + 
+    theme(legend.position = "none") +
+    ylim(0,0.9) +
+    labs(x="",y="miQC Score",title="Probability of Low Cell Quality\nby TIM Assignment")) %>% 
+  ggsave("tim_miqc.png",.,dpi=600,height=4,width=5)
