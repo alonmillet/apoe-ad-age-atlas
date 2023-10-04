@@ -90,9 +90,8 @@ mean_props$variable = factor(mean_props$variable, levels = levels(seu))
 mean_props.mat = dcast(mean_props, variable ~ genotype, value.var = "value")
 mean_props.mat = as.matrix(mean_props.mat[,2:4])
 rownames(mean_props.mat) = mean_props$variable %>% levels
-rownames(mean_props.mat)[8] = "Poised-like Homeostatic Microglia" #rename
 
-png("bisque_all_clusters.png",res=600,width=5,height=13.75,units='in')
+png("bisque_all_clusters.png",res=600,width=5,height=11.25,units='in')
 Heatmap(mean_props.mat, name = "Bisque\nFrequencies", cluster_rows = F, cluster_columns = F,
         rect_gp = gpar(col = "black", lwd = 0.75), column_names_rot = 0)
 dev.off()
