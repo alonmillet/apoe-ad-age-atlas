@@ -79,7 +79,7 @@ p2 = ggplot(timprops, aes(x=genotype,y=`Effector-lo TIMs`)) +
 
 ((p2/p1) & ylim(0,26)) %>% ggsave("bisque_frequencies.png",.,dpi=600,width=11,height=10)
 
-# Figure S1G ----
+# Figure S1H ----
 props.t = data.table(props[,2:16] %>% as.matrix %>% t)
 props.t$rn = c(rep("E2",5),rep("E3",5),rep("E4",5))
 colnames(props.t) = c(props$rn,'genotype')
