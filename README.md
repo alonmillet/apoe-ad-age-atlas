@@ -1,5 +1,5 @@
 # apoe-ad-age-atlas
-This repository contains the code needed to reproduce all results and plots in the paper "An Exhausted-Like Microglial Population that Accumulates in Aged and APOE4 Genotype Alzheimer’s Brains" from Millet, Ledo et al. Code snippets are separated into files mirroring the organization of figures in the manuscript.
+This repository contains the code needed to reproduce all results and plots in the paper "An Exhausted-Like Microglial Population Accumulates in Aged and APOE4 Genotype Alzheimer’s Brains" from Millet, Ledo et al. Code snippets are separated into files mirroring the organization of figures in the manuscript.
 
 ![Schematic](schematic.png)
 
